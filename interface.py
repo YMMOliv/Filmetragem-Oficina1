@@ -23,6 +23,7 @@ def go_to_metrics():
 
 
 def restart_app():
+    filtering.clear_watched_df()
     f = open(SECTION_PATH, 'w')
     f.write('1')
     f.close()
@@ -108,9 +109,10 @@ def main():
 
         with st.form(key='1'):
             for i in range(len(recommended)):
-                movies = recommended.loc[i]
+                movies = recommended.iloc[i]
                 form_movie(movies, False)
                 st.radio(label='Essa recomendação foi útil?', key=i, options=('Sim', 'Não'))
+                st.markdown('---')
             st.form_submit_button(label='Avaliar', on_click=go_to_metrics)
 
     # Terceira seção
