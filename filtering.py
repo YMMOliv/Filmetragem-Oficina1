@@ -2,6 +2,7 @@ import pandas as pd
 from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import precision_score
 import os
 import json
 import recmetrics
@@ -101,17 +102,20 @@ def save_new_reccomendations(reccomendations):
 # Calculate Precision
 # Precisão = Total de filmes assistidos / Total de filmes recomendados
 def calc_precision():
-    acc = 0
     history = reccomended_history()  
+    if len(history) == 0: return 0
 
-    acc += sum([sum(list(recs.values())) for recs in history])
-    acc /= len(history) * 7
+    y_pred = [list(recs.values()) for recs in history]
+    y_true = [[1] * 7] * len(history)
+
+    prec = precision_score(y_pred, y_true, average='micro')
     
-    return acc
+    return prec
 
 # Calculate Personalization
 def calc_personalization():
     history = reccomended_history()  
+    if len(history) <= 1: return 0
     mat = []
 
     for user_list in history:
@@ -121,8 +125,6 @@ def calc_personalization():
         mat.append(ids)
 
     result = recmetrics.personalization(mat)
-    print(mat)
-    print(result)
     return result
 
 # Calculate Intra-list Similarity

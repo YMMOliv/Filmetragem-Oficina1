@@ -109,19 +109,25 @@ def main():
 
         recommended = filtering.recommend_movies()
 
-        with st.form(key='1'):
-            usefull_reccomendations = {}
-            for i in range(len(recommended)):
-                movies = recommended.iloc[i]
-                form_movie(movies, False)
-
-                reccomendation_eval = st.radio(label='Essa recomendação foi útil?', key=i, options=('Sim', 'Não'))
-                reccomendation_eval = 1 if reccomendation_eval == 'Sim' else 0
-                currentId = int(recommended.iloc[i]['currentId'])
-                usefull_reccomendations[currentId] = reccomendation_eval
-                st.markdown('---')
+        usefull_reccomendations = {}
+        for i in range(len(recommended)):
+            movies = recommended.iloc[i]
+            form_movie(movies, False)
+            currentId = int(recommended.iloc[i]['currentId'])
             
-            st.form_submit_button(label='Avaliar', on_click= lambda : go_to_metrics(usefull_reccomendations))
+            default = st.session_state.get(currentId, "Sim")
+            index = 0 if default == "Sim" else 1
+            reccomendation_eval = st.radio(label='Essa recomendação foi útil?', key=i, index=index, options=('Sim', 'Não'))
+            if reccomendation_eval == 'Sim':
+                st.write('You like coding.')
+            else:
+                st.write("You do not like coding.")
+
+            reccomendation_eval = 1 if reccomendation_eval == 'Sim' else 0
+            usefull_reccomendations[currentId] = reccomendation_eval
+            st.markdown('---')
+            
+        st.button(label='Avaliar', on_click= lambda : go_to_metrics(usefull_reccomendations))
 
     # Terceira seção
     else:
