@@ -135,8 +135,6 @@ def calc_accuracy(history):
 
     acc = accuracy_score(y_pred, y_true)
 
-    print(y_pred, y_true, acc)
-    
     return acc
 
 

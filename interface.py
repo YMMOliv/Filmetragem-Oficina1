@@ -16,8 +16,8 @@ def go_to_recommended():
     f.close()
 
 
-def go_to_metrics(recommendations):
-    filtering.save_new_recommendations(recommendations)
+def go_to_metrics():
+    filtering.save_new_recommendations(usefull_recommendations)
     f = open(SECTION_PATH, 'w')
     f.write('3')
     f.close()
@@ -107,7 +107,7 @@ def main():
                 \nPor favor, avalie a relevancia delas.')
 
         recommended = filtering.recommend_movies()
-
+        global usefull_recommendations
         usefull_recommendations = {}
         for i in range(len(recommended)):
             movies = recommended.iloc[i]
@@ -126,7 +126,7 @@ def main():
             usefull_recommendations[currentId] = reccomendation_eval
             st.markdown('---')
             
-        st.button(label='Avaliar', on_click= lambda : go_to_metrics(usefull_recommendations))
+        st.button(label='Avaliar', on_click=go_to_metrics)
 
     # Terceira seção
     else:
