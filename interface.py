@@ -60,7 +60,7 @@ def form_movie(movies, watch):
 
 
 def main():
-    st.set_page_config(layout="wide", page_icon="🎥",
+    st.set_page_config(layout="centered", page_icon="🎥",
                        page_title="Filmetragem App")
 
     # Cabeçalho de todas as páginas
@@ -150,55 +150,50 @@ def main():
 
         st.title('').markdown(html_title, unsafe_allow_html=True)
 
-        c1, c2 = st.columns([1, 1])
+        html_title = """
+            <h3 style="color:white; text-align:center;">Usuário Atual</h3>
+        """
+        st.text("").markdown(html_title, unsafe_allow_html=True)
 
-        with c1:
+        self_accuracy = filtering.calc_accuracy(current_user_history)
+        self_precision = filtering.calc_precision(current_user_history)
+        self_f1 = filtering.calc_f1(current_user_history)
+        self_intralist_similarity = filtering.calc_intralist_similarity(
+            current_user_history)
 
-            html_title = """
-                <h3 style="color:white; text-align:center;">Usuário Atual</h3>
-            """
-            st.text("").markdown(html_title, unsafe_allow_html=True)
+        # Gerando gráfico do usuário
+        labels = ['Acurácia', 'Precisão', 'F1', 'Sim. Intra-Lista']
+        values = [self_accuracy, self_precision,
+                  self_f1, self_intralist_similarity]
 
-            self_accuracy = filtering.calc_accuracy(current_user_history)
-            self_precision = filtering.calc_precision(current_user_history)
-            self_f1 = filtering.calc_f1(current_user_history)
-            self_intralist_similarity = filtering.calc_intralist_similarity(
-                current_user_history)
+        fig2 = go.Figure([go.Bar(x=labels, y=values)])
 
-            # Gerando gráfico do usuário
-            labels = ['Acurácia', 'Precisão', 'F1', 'Sim. Intra-Lista']
-            values = [self_accuracy, self_precision,
-                      self_f1, self_intralist_similarity]
+        st.plotly_chart(fig2, use_container_width=True)
 
-            fig2 = go.Figure([go.Bar(x=labels, y=values)])
+        html_title = """
+            <h3 style="color:white; text-align:center;">Usuários no Geral</h3>
+        """
+        st.text('').markdown(html_title, unsafe_allow_html=True)
 
-            st.plotly_chart(fig2, use_container_width=True)
+        accuracy = filtering.calc_accuracy(all_users_history)
+        precision = filtering.calc_precision(all_users_history)
+        f1 = filtering.calc_f1(all_users_history)
+        intralist_similarity = filtering.calc_intralist_similarity(
+            all_users_history)
+        personalization = filtering.calc_personalization(all_users_history)
 
-        with c2:
-            html_title = """
-                <h3 style="color:white; text-align:center;">Usuários no Geral</h3>
-            """
-            st.text('').markdown(html_title, unsafe_allow_html=True)
+        # Gerando gráfico geral
+        labels = ['Acurácia', 'Precisão', 'F1',
+                  'Sim. Intra-Lista', 'Personalização']
+        values = [accuracy, precision, f1,
+                  intralist_similarity, personalization]
 
-            accuracy = filtering.calc_accuracy(all_users_history)
-            precision = filtering.calc_precision(all_users_history)
-            f1 = filtering.calc_f1(all_users_history)
-            intralist_similarity = filtering.calc_intralist_similarity(
-                all_users_history)
-            personalization = filtering.calc_personalization(all_users_history)
+        fig2 = go.Figure([go.Bar(x=labels, y=values)])
 
-            # Gerando gráfico geral
-            labels = ['Acurácia', 'Precisão', 'F1',
-                      'Sim. Intra-Lista', 'Personalização']
-            values = [accuracy, precision, f1,
-                      intralist_similarity, personalization]
-
-            fig2 = go.Figure([go.Bar(x=labels, y=values)])
-
-            st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, use_container_width=True)
 
         st.markdown('---')
-        c_1, c_2, c_3 = st.columns([8, 7, 8])
+        c_1, c_2, c_3 = st.columns([2, 6, 2])
 
         html_greatful = """
             <h4 style="text-align:center; text-color: white;">Obrigada por utilizar nosso sistema!😊</4>
