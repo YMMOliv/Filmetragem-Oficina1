@@ -86,7 +86,7 @@ def main():
 
         global movie_title
         movie_title = st.selectbox(
-            "Escolha alguns filmes para assistir",
+            "Informe os filmes assistidos",
             options=movies['title'])
 
         movie_row = movies.loc[movies['title'] == movie_title]
