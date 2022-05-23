@@ -107,12 +107,9 @@ def main():
     # Segunda seção
     elif section == '2':
         html_title = """
-            <h3 style="color:white;text-align:center;">Recomendações</h3>
+            <h3 style="color:white;text-align:center;">Suas Recomendações</h3>
         """
         st.title("").markdown(html_title, unsafe_allow_html=True)
-
-        st.text('Essas foram as recomendações que encontramos para voce.\
-                \nPor favor, avalie a relevancia delas.')
 
         recommended = filtering.recommend_movies()
         global usefull_recommendations
