@@ -130,14 +130,22 @@ def main():
 
     # Terceira seção
     else:
+        accuracy = filtering.calc_accuracy()
+        st.text(f'Acurácia: {accuracy:.5f}')
+
         precision = filtering.calc_precision()
         st.text(f'Precisão: {precision:.5f}')
+
+        recall = filtering.calc_recall()
+        st.text(f'Recall: {recall:.5f}')
+
+        f1 = filtering.calc_f1()
+        st.text(f'F1: {f1:.5f}')
 
         intralist_similarity = filtering.calc_intralist_similarity()
         st.text(f'Similaridade Intra-Lista: {intralist_similarity:.5f}')
         
         personalization = filtering.calc_personalization()
-        print(personalization)
         st.text(f'Personalização: {personalization:.5f}')
 
         st.text('Obrigado por participar~')

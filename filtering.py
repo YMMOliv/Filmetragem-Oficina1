@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import precision_score
+from sklearn.metrics import precision_score, accuracy_score, f1_score, recall_score
 import os
 import json
 import recmetrics
@@ -111,7 +111,6 @@ def save_new_recommendations(recommendations):
 
 
 # Calculate Precision
-# Precisão = Total de filmes assistidos / Total de filmes recomendados
 def calc_precision():
     history = reccomended_history()  
     if len(history) == 0: return 0
@@ -122,6 +121,46 @@ def calc_precision():
     prec = precision_score(y_pred, y_true, average='micro')
     
     return prec
+
+
+# Calculate Accuracy
+def calc_accuracy():
+    history = reccomended_history()  
+    if len(history) == 0: return 0
+
+    y_pred = [list(recs.values()) for recs in history]
+    y_true = [[1] * 7] * len(history)
+
+    acc = accuracy_score(y_pred, y_true)
+    
+    return acc
+
+
+# Calculate Recall
+def calc_recall():
+    history = reccomended_history()  
+    if len(history) == 0: return 0
+
+    y_pred = [list(recs.values()) for recs in history]
+    y_true = [[1] * 7] * len(history)
+
+    acc = recall_score(y_pred, y_true, average='micro')
+    
+    return acc
+
+
+# Calculate F-score
+def calc_f1():
+    history = reccomended_history()  
+    if len(history) == 0: return 0
+
+    y_pred = [list(recs.values()) for recs in history]
+    y_true = [[1] * 7] * len(history)
+
+    acc = f1_score(y_pred, y_true, average='micro')
+    
+    return acc
+
 
 # Calculate Personalization
 def calc_personalization():
