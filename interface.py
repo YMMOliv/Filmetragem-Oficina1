@@ -18,6 +18,7 @@ def go_to_recommended():
 
 
 def go_to_metrics():
+
     filtering.save_new_recommendations(usefull_recommendations)
     f = open(SECTION_PATH, 'w')
     f.write('3')
@@ -58,18 +59,8 @@ def form_movie(movies, watch):
             st.button(label='Assistido', on_click=watch_movie)
 
 
-def navigation():
-    page = st.sidebar.selectbox(label='Menu', options=[
-        'Home', 'Recomendações'])
-
-    if page == 'Home':
-        restart_app
-    elif page == 'Recomendações':
-        go_to_recommended
-
-
 def main():
-    st.set_page_config(layout="centered", page_icon="🎥",
+    st.set_page_config(layout="wide", page_icon="🎥",
                        page_title="Filmetragem App")
 
     # Cabeçalho de todas as páginas
@@ -79,8 +70,6 @@ def main():
     """
     st.title("").markdown(html_title, unsafe_allow_html=True)
     st.markdown('---')
-
-    # navigation()
 
     # Leitura da variável de controle
     with open(SECTION_PATH) as f:
@@ -117,7 +106,6 @@ def main():
 
     # Segunda seção
     elif section == '2':
-
         html_title = """
             <h3 style="color:white;text-align:center;">Recomendações</h3>
         """
@@ -157,53 +145,65 @@ def main():
         current_user_history = [all_users_history[-1]]
 
         html_title = """
-            <h3 style="color:white; text-align:center;">Desempenho do Sistema: Usuário atual</h3>
-        """
-        st.text("").markdown(html_title, unsafe_allow_html=True)
+                <h3 style="color:white; text-align:center;">Desempenho do Sistema</h3>
+            """
 
-        self_accuracy = filtering.calc_accuracy(current_user_history)
-        self_precision = filtering.calc_precision(current_user_history)
-        self_f1 = filtering.calc_f1(current_user_history)
-        self_intralist_similarity = filtering.calc_intralist_similarity(
-            current_user_history)
+        st.title('').markdown(html_title, unsafe_allow_html=True)
 
-        # Gerando gráfico do usuário
-        labels = ['Acurácia', 'Precisão', 'F1', 'Sim. Intra-Lista']
-        values = [self_accuracy, self_precision,
-                  self_f1, self_intralist_similarity]
+        c1, c2 = st.columns([1, 1])
 
-        fig2 = go.Figure([go.Bar(x=labels, y=values)])
+        with c1:
 
-        st.plotly_chart(fig2, use_container_width=True)
+            html_title = """
+                <h3 style="color:white; text-align:center;">Usuário Atual</h3>
+            """
+            st.text("").markdown(html_title, unsafe_allow_html=True)
 
-        html_title = """
-            <h3 style="color:white; text-align:center;">Desempenho do Sistema - Geral</h3>
-        """
-        st.text('').markdown(html_title, unsafe_allow_html=True)
+            self_accuracy = filtering.calc_accuracy(current_user_history)
+            self_precision = filtering.calc_precision(current_user_history)
+            self_f1 = filtering.calc_f1(current_user_history)
+            self_intralist_similarity = filtering.calc_intralist_similarity(
+                current_user_history)
 
-        accuracy = filtering.calc_accuracy(all_users_history)
-        precision = filtering.calc_precision(all_users_history)
-        f1 = filtering.calc_f1(all_users_history)
-        intralist_similarity = filtering.calc_intralist_similarity(
-            all_users_history)
-        personalization = filtering.calc_personalization(all_users_history)
+            # Gerando gráfico do usuário
+            labels = ['Acurácia', 'Precisão', 'F1', 'Sim. Intra-Lista']
+            values = [self_accuracy, self_precision,
+                      self_f1, self_intralist_similarity]
 
-        # Gerando gráfico geral
-        labels = ['Acurácia', 'Precisão', 'F1',
-                  'Sim. Intra-Lista', 'Personalização']
-        values = [accuracy, precision, f1,
-                  intralist_similarity, personalization]
+            fig2 = go.Figure([go.Bar(x=labels, y=values)])
 
-        fig2 = go.Figure([go.Bar(x=labels, y=values)])
+            st.plotly_chart(fig2, use_container_width=True)
 
-        st.plotly_chart(fig2, use_container_width=True)
+        with c2:
+            html_title = """
+                <h3 style="color:white; text-align:center;">Usuários no Geral</h3>
+            """
+            st.text('').markdown(html_title, unsafe_allow_html=True)
+
+            accuracy = filtering.calc_accuracy(all_users_history)
+            precision = filtering.calc_precision(all_users_history)
+            f1 = filtering.calc_f1(all_users_history)
+            intralist_similarity = filtering.calc_intralist_similarity(
+                all_users_history)
+            personalization = filtering.calc_personalization(all_users_history)
+
+            # Gerando gráfico geral
+            labels = ['Acurácia', 'Precisão', 'F1',
+                      'Sim. Intra-Lista', 'Personalização']
+            values = [accuracy, precision, f1,
+                      intralist_similarity, personalization]
+
+            fig2 = go.Figure([go.Bar(x=labels, y=values)])
+
+            st.plotly_chart(fig2, use_container_width=True)
 
         st.markdown('---')
-        c_1, c_2, c_3 = st.columns([2, 6, 2])
+        c_1, c_2, c_3 = st.columns([8, 7, 8])
 
         html_greatful = """
-            <h4 style="text-align:center; text-color: white; font-size: 24px; font-style=sans-serif;">Obrigada por utilizar nosso sistema!😊</4>
+            <h4 style="text-align:center; text-color: white;">Obrigada por utilizar nosso sistema!😊</4>
         """
+
         with c_2:
             image = Image.open('./gif/thankU.png')
             st.title("").markdown(html_greatful, unsafe_allow_html=True)
