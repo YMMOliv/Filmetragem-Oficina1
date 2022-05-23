@@ -111,8 +111,7 @@ def save_new_recommendations(recommendations):
 
 
 # Calculate Precision
-def calc_precision():
-    history = reccomended_history()  
+def calc_precision(history):
     if len(history) == 0: return 0
 
     y_pred = [list(recs.values()) for recs in history]
@@ -124,21 +123,25 @@ def calc_precision():
 
 
 # Calculate Accuracy
-def calc_accuracy():
-    history = reccomended_history()  
+def calc_accuracy(history):
     if len(history) == 0: return 0
 
     y_pred = [list(recs.values()) for recs in history]
     y_true = [[1] * 7] * len(history)
 
+    if (len(history) == 1):
+        y_pred = y_pred[0]
+        y_true = y_true[0]
+
     acc = accuracy_score(y_pred, y_true)
+
+    print(y_pred, y_true, acc)
     
     return acc
 
 
 # Calculate Recall
-def calc_recall():
-    history = reccomended_history()  
+def calc_recall(history):
     if len(history) == 0: return 0
 
     y_pred = [list(recs.values()) for recs in history]
@@ -150,12 +153,11 @@ def calc_recall():
 
 
 # Calculate F-score
-def calc_f1():
-    history = reccomended_history()  
+def calc_f1(history):
     if len(history) == 0: return 0
 
-    y_pred = [list(recs.values()) for recs in history]
-    y_true = [[1] * 7] * len(history)
+    y_pred = [[1] * 7] * len(history)
+    y_true = [list(recs.values()) for recs in history]
 
     acc = f1_score(y_pred, y_true, average='micro')
     
@@ -163,8 +165,7 @@ def calc_f1():
 
 
 # Calculate Personalization
-def calc_personalization():
-    history = reccomended_history()  
+def calc_personalization(history):
     if len(history) <= 1: return 0
     mat = []
 
@@ -177,11 +178,11 @@ def calc_personalization():
     result = recmetrics.personalization(mat)
     return result
 
+
 # Calculate Intra-list Similarity
-def calc_intralist_similarity():
+def calc_intralist_similarity(history):
     movies = get_movies()
     all_movies_vectors = get_tfidf_vectors()
-    history = reccomended_history()
 
     mat = []
     for user_list in history:

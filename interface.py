@@ -1,9 +1,9 @@
 import filtering
 import streamlit as st
+import plotly.graph_objects as go
 
 
 SECTION_PATH = 'section-control.txt'
-
 
 def watch_movie():
     global movie_title
@@ -130,25 +130,48 @@ def main():
 
     # Terceira seção
     else:
-        accuracy = filtering.calc_accuracy()
-        st.text(f'Acurácia: {accuracy:.5f}')
+        all_users_history = filtering.reccomended_history()
+        current_user_history = [all_users_history[-1]]
 
-        precision = filtering.calc_precision()
-        st.text(f'Precisão: {precision:.5f}')
+        html_title = """
+            <h3 style="color:white;">Desempenho do sistema: Usuário atual</h3>
+        """
+        st.title("").markdown(html_title, unsafe_allow_html=True)
 
-        recall = filtering.calc_recall()
-        st.text(f'Recall: {recall:.5f}')
+        self_accuracy = filtering.calc_accuracy(current_user_history)
+        self_precision = filtering.calc_precision(current_user_history)
+        self_f1 = filtering.calc_f1(current_user_history)
+        self_intralist_similarity = filtering.calc_intralist_similarity(current_user_history)
 
-        f1 = filtering.calc_f1()
-        st.text(f'F1: {f1:.5f}')
+        # Gerando gráfico do usuário
+        labels = ['Acurácia', 'Precisão', 'F1', 'Sim. Intra-Lista']
+        values = [self_accuracy, self_precision, self_f1, self_intralist_similarity]
 
-        intralist_similarity = filtering.calc_intralist_similarity()
-        st.text(f'Similaridade Intra-Lista: {intralist_similarity:.5f}')
-        
-        personalization = filtering.calc_personalization()
-        st.text(f'Personalização: {personalization:.5f}')
+        fig2 = go.Figure([go.Bar(x=labels, y=values)])
+
+        st.plotly_chart(fig2, use_container_width=True)
+
+        html_title = """
+            <h3 style="color:white;">Desempenho do sistema - Geral</h3>
+        """
+        st.title("").markdown(html_title, unsafe_allow_html=True)
+
+        accuracy = filtering.calc_accuracy(all_users_history)
+        precision = filtering.calc_precision(all_users_history)
+        f1 = filtering.calc_f1(all_users_history)
+        intralist_similarity = filtering.calc_intralist_similarity(all_users_history)
+        personalization = filtering.calc_personalization(all_users_history)
+
+        # Gerando gráfico geral
+        labels = ['Acurácia', 'Precisão', 'F1', 'Sim. Intra-Lista', 'Personalização']
+        values = [accuracy, precision, f1, intralist_similarity, personalization]
+
+        fig2 = go.Figure([go.Bar(x=labels, y=values)])
+
+        st.plotly_chart(fig2, use_container_width=True)
 
         st.text('Obrigado por participar~')
+
         st.button(label='Encerrar', key=2, on_click=restart_app)
             
             
