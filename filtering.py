@@ -1,5 +1,4 @@
 import pandas as pd
-from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import precision_score
@@ -7,16 +6,17 @@ import os
 import json
 import recmetrics
 
-ROOT = "dataset processado"
-ALL_MOVIES = ROOT + '/movies-subset.csv'
-WATCHED = ROOT + '/movies-watched.csv'
-ALL_RECOMMENDED = ROOT + '/users-data.txt'
+
+ROOT = 'data/'
+ALL_MOVIES = ROOT + 'movies-subset.csv'
+WATCHED = ROOT + 'user-watched-movies.txt'
+ALL_RECOMMENDED = ROOT + 'users-recommended.txt'
 
 
 # DF de todos os filmes
 def get_movies():
-  df_movies = pd.read_csv(ALL_MOVIES)
-  return df_movies
+    df_movies = pd.read_csv(ALL_MOVIES)
+    return df_movies
 
 
 # Matriz de vetores TF-IDF usando os gêneros dos filmes
@@ -32,6 +32,14 @@ def get_tfidf_vectors():
     return all_movies_vectors
 
 
+# Filmes assistidos pelo usuário
+def get_watched_movies():
+    with open(WATCHED) as f:
+        watched_titles = f.readline()
+    watched_titles = watched_titles.split('|')[:-1]
+    return watched_titles
+
+
 # Função de recomendação usando filtragem baseada em conteúdo e avaliação implícita
 def recommend_movies():
     
@@ -40,12 +48,15 @@ def recommend_movies():
     all_movies_vectors = get_tfidf_vectors()
 
     # Geração do perfil do usuário com base nos filmes assistidos por ele
-    df_watched = pd.read_csv(WATCHED)['title'].values
-    watched_vectors = [all_movies_vectors.loc[i] for i in df_watched]
-    profile = sum(watched_vectors) / len(watched_vectors)
+    watched_titles = get_watched_movies()
+    watched_vectors = [all_movies_vectors.loc[i] for i in watched_titles]
+    if len(watched_vectors) > 0:
+        profile = sum(watched_vectors) / len(watched_vectors)
+    else:
+        profile = pd.Series([0]*len(all_movies_vectors.iloc[0]))
 
     # Usando KNN para obter os filmes mais próximos do perfil do usuário
-    not_watched_vectors = all_movies_vectors.drop(df_watched, axis=0)
+    not_watched_vectors = all_movies_vectors.drop(watched_titles, axis=0)
 
     model_knn = NearestNeighbors(
         metric='cosine', 
@@ -64,18 +75,18 @@ def recommend_movies():
     return df_recommended
 
 
-# Adiciona e salva filme assistido num DF por causa do problema do streamlit
-def add_watched_movie(row):
-  df_watched = pd.read_csv(WATCHED)
-  df_watched_new = pd.concat([df_watched, row], ignore_index=True)
-  df_watched_new.to_csv(path_or_buf=WATCHED, sep=',', index=False)
+# Adiciona e salva filme assistido pleo usuário num arquivo
+def add_watched_movie(movie_title):
+    f = open(WATCHED, 'a')
+    f.write(movie_title+'|')
+    f.close()
 
 
-# Esvazia o DF dos filmes assistidoos por causa do problema do streamlit
-def clear_watched_df():
-    df_watched = pd.read_csv(WATCHED)
-    df_watched_new = df_watched.iloc[0:0]
-    df_watched_new.to_csv(path_or_buf=WATCHED, sep=',', index=False)
+# Esvazia o arquivo dos filmes assistidos pelo usuário
+def clear_watched_data():
+    f = open(WATCHED, 'w')
+    f.write('')
+    f.close()
 
 
 # Histórico de filmes recomendados para cada usuário
@@ -90,12 +101,12 @@ def reccomended_history():
 
 
 # Save recommendations
-def save_new_reccomendations(reccomendations):
+def save_new_recommendations(recommendations):
     f2 = open(ALL_RECOMMENDED, 'a')
     if(os.path.getsize(ALL_RECOMMENDED) > 0):
-        f2.write("\n" + json.dumps(reccomendations))
+        f2.write("\n" + json.dumps(recommendations))
     else:
-        f2.write(json.dumps(reccomendations))
+        f2.write(json.dumps(recommendations))
     f2.close()
 
 

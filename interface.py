@@ -6,8 +6,8 @@ SECTION_PATH = 'section-control.txt'
 
 
 def watch_movie():
-    global movie_row
-    filtering.add_watched_movie(movie_row)
+    global movie_title
+    filtering.add_watched_movie(movie_title)
 
 
 def go_to_recommended():
@@ -16,16 +16,15 @@ def go_to_recommended():
     f.close()
 
 
-def go_to_metrics(reccomendations):
-    filtering.save_new_reccomendations(reccomendations)
-
+def go_to_metrics(recommendations):
+    filtering.save_new_recommendations(recommendations)
     f = open(SECTION_PATH, 'w')
     f.write('3')
     f.close()
 
 
 def restart_app():
-    filtering.clear_watched_df()
+    filtering.clear_watched_data()
     f = open(SECTION_PATH, 'w')
     f.write('1')
     f.close()
@@ -83,13 +82,13 @@ def main():
         st.title("").markdown(html_title, unsafe_allow_html=True)
         
         movies = filtering.get_movies()
-
-        movie_name = st.selectbox(
+        
+        global movie_title
+        movie_title = st.selectbox(
                 "Escolha alguns filmes para assistir",
                 options=movies['title'])
         
-        global movie_row
-        movie_row = movies.loc[movies['title'] == movie_name]
+        movie_row = movies.loc[movies['title'] == movie_title]
         
         form_movie(movie_row.iloc[0], True)
 
@@ -109,7 +108,7 @@ def main():
 
         recommended = filtering.recommend_movies()
 
-        usefull_reccomendations = {}
+        usefull_recommendations = {}
         for i in range(len(recommended)):
             movies = recommended.iloc[i]
             form_movie(movies, False)
@@ -118,16 +117,16 @@ def main():
             default = st.session_state.get(currentId, "Sim")
             index = 0 if default == "Sim" else 1
             reccomendation_eval = st.radio(label='Essa recomendação foi útil?', key=i, index=index, options=('Sim', 'Não'))
-            if reccomendation_eval == 'Sim':
-                st.write('You like coding.')
-            else:
-                st.write("You do not like coding.")
+            # if reccomendation_eval == 'Sim':
+            #     st.write('You like coding.')
+            # else:
+            #     st.write("You do not like coding.")
 
             reccomendation_eval = 1 if reccomendation_eval == 'Sim' else 0
-            usefull_reccomendations[currentId] = reccomendation_eval
+            usefull_recommendations[currentId] = reccomendation_eval
             st.markdown('---')
             
-        st.button(label='Avaliar', on_click= lambda : go_to_metrics(usefull_reccomendations))
+        st.button(label='Avaliar', on_click= lambda : go_to_metrics(usefull_recommendations))
 
     # Terceira seção
     else:

@@ -4,10 +4,10 @@ import httplib2
 sys.path.append("lib")
 
 
-ROOT = "/home/dragmire/Documentos/6 período/Oficina/oficina-i-avaliacao-ii/dataset processado"
+ROOT = 'data/'
 
-MOVIES_ALL = ROOT + '/movies-only.csv'
-MOVIES_SUBSET = ROOT + '/movies-subset.csv'
+MOVIES_ALL = ROOT + 'movies-dataset.csv'
+MOVIES_SUBSET = ROOT + 'movies-subset.csv'
 
 df_movies = pd.read_csv(MOVIES_ALL)
 
