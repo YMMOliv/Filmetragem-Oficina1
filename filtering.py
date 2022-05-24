@@ -114,10 +114,12 @@ def save_new_recommendations(recommendations):
 def calc_precision(history):
     if len(history) == 0: return 0
 
-    y_pred = [list(recs.values()) for recs in history]
-    y_true = [[1] * 7] * len(history)
+    y_pred = [1] * (7 * len(history))
+    y_true = []
+    for recs in history:
+        y_true.extend(list(recs.values()))
 
-    prec = precision_score(y_pred, y_true, average='micro')
+    prec = precision_score(y_pred, y_true)
     
     return prec
 
@@ -126,27 +128,13 @@ def calc_precision(history):
 def calc_accuracy(history):
     if len(history) == 0: return 0
 
-    y_pred = [list(recs.values()) for recs in history]
-    y_true = [[1] * 7] * len(history)
-
-    if (len(history) == 1):
-        y_pred = y_pred[0]
-        y_true = y_true[0]
+    y_pred = [1] * (7 * len(history))
+    y_true = []
+    for recs in history:
+        y_true.extend(list(recs.values()))
 
     acc = accuracy_score(y_pred, y_true)
 
-    return acc
-
-
-# Calculate Recall
-def calc_recall(history):
-    if len(history) == 0: return 0
-
-    y_pred = [list(recs.values()) for recs in history]
-    y_true = [[1] * 7] * len(history)
-
-    acc = recall_score(y_pred, y_true, average='micro')
-    
     return acc
 
 
@@ -154,12 +142,14 @@ def calc_recall(history):
 def calc_f1(history):
     if len(history) == 0: return 0
 
-    y_pred = [[1] * 7] * len(history)
-    y_true = [list(recs.values()) for recs in history]
+    y_pred = []
+    for recs in history:
+        y_pred.extend(list(recs.values()))
+    y_true = [1] * (7 * len(history))
 
-    acc = f1_score(y_pred, y_true, average='micro')
+    f1 = f1_score(y_pred, y_true)
     
-    return acc
+    return f1
 
 
 # Calculate Personalization
@@ -186,7 +176,8 @@ def calc_intralist_similarity(history):
     for user_list in history:
         titles = []
         for movie_id in user_list.keys():
-            movie_title = movies.loc[movies['currentId'] == int(movie_id)]['title'].values[0]
+            movie = movies.loc[movies['currentId'] == int(movie_id)]
+            movie_title = movie['title'].values[0]
             titles.append(movie_title)
         mat.append(titles)
 
